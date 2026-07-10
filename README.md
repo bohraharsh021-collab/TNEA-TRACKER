@@ -63,4 +63,4 @@ python rebuild_database.py
 
 ## 📄 License
 
-This project is open-source and licensed under the **GNU General Public License v3.0**. See the `LICENSE` file for details.
+Copyright © 2026 Harsh. All rights reserved. Licensed under a proprietary All-Rights-Reserved license. See the `LICENSE` file for details.

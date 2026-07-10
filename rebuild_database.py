@@ -28,46 +28,6 @@ DUPLICATE_GROUPS = [
     ('TX', ['TT'])
 ]
 
-NEW_BRANCHES = [
-    ('AI', 'ARTIFICIAL INTELLIGENCE'),
-    ('QC', 'QUANTUM COMPUTING'),
-    ('DS', 'DATA SCIENCE'),
-    ('ML', 'MACHINE LEARNING'),
-    ('NT', 'NANO TECHNOLOGY'),
-    ('RE', 'RENEWABLE ENERGY ENGINEERING'),
-    ('CN', 'COMPUTER NETWORKS AND INFRASTRUCTURE'),
-    ('SE', 'SOFTWARE ENGINEERING'),
-    ('DE', 'DATABASE ENGINEERING'),
-    ('CC', 'CLOUD COMPUTING AND TECHNOLOGY'),
-    ('ST', 'SUSTAINABLE TECHNOLOGY AND DEVELOPMENT'),
-    ('RO', 'AUTOMATION AND ROBOTICS ENGINEERING')
-]
-
-NEW_ADMISSIONS_DATA = [
-    # (year, college_code, branch_code, community, opening_cutoff, closing_cutoff, opening_rank, closing_rank)
-    # CEG (1)
-    (2025, 1, 'AI', 'OC', 199.5, 199.0, 50, 95),
-    (2025, 1, 'DS', 'OC', 199.25, 198.75, 80, 140),
-    (2025, 1, 'ML', 'OC', 199.0, 198.5, 100, 190),
-    (2025, 1, 'QC', 'OC', 198.5, 197.75, 150, 280),
-    # MIT (4)
-    (2025, 4, 'AI', 'OC', 198.25, 197.5, 250, 380),
-    (2025, 4, 'DS', 'OC', 198.0, 197.25, 300, 420),
-    (2025, 4, 'ML', 'OC', 197.75, 196.75, 350, 490),
-    # PSG Tech (2006)
-    (2025, 2006, 'AI', 'OC', 197.25, 195.5, 500, 750),
-    (2025, 2006, 'DS', 'OC', 197.0, 195.0, 600, 850),
-    (2025, 2006, 'RO', 'OC', 196.5, 194.5, 700, 980),
-    # SSN (1315)
-    (2025, 1315, 'AI', 'OC', 196.25, 194.0, 800, 1150),
-    (2025, 1315, 'DS', 'OC', 196.0, 193.5, 900, 1250),
-    (2025, 1315, 'CC', 'OC', 195.5, 193.0, 1000, 1380),
-    # KCT (2712)
-    (2025, 2712, 'AI', 'OC', 195.0, 191.5, 1500, 2100),
-    (2025, 2712, 'DS', 'OC', 194.5, 190.5, 1800, 2350),
-    (2025, 2712, 'RO', 'OC', 194.0, 189.5, 2000, 2600),
-]
-
 def clean_val(val, is_float=False):
     if val is None or val == "" or str(val).upper() == "NULL" or str(val) == "—":
         return None
@@ -170,7 +130,7 @@ def rebuild_db():
             b_code = row['Branch Code'].strip()
             b_name = row['Branch Name'].strip()
             
-            # Collect unique colleges (keep first or most detailed)
+            # Collect unique colleges
             if c_code not in colleges_data:
                 colleges_data[c_code] = (c_name, district, inst_type)
                 
@@ -253,34 +213,6 @@ def rebuild_db():
     all_dups = [d for p, dups in DUPLICATE_GROUPS for d in dups]
     placeholders = ','.join('?' for _ in all_dups)
     c.execute(f"DELETE FROM branches WHERE branch_code IN ({placeholders})", all_dups)
-    
-    # Insert new branches to guarantee 100+ branches
-    print("Inserting new modern branches...")
-    inserted_branches = 0
-    for code, name in NEW_BRANCHES:
-        try:
-            c.execute("INSERT INTO branches (branch_code, branch_name) VALUES (?, ?)", (code, name))
-            inserted_branches += 1
-        except sqlite3.IntegrityError:
-            pass
-    print(f"  Inserted {inserted_branches} new branches.")
-    
-    # Insert sample admissions for new branches (including cutoffs and ranks)
-    print("Inserting sample admission records for new branches...")
-    inserted_admissions = 0
-    for row in NEW_ADMISSIONS_DATA:
-        year, college_code, branch_code, community, op_cut, cl_cut, op_rank, cl_rank = row
-        c.execute("""
-            SELECT id FROM admissions 
-            WHERE year = ? AND college_code = ? AND branch_code = ? AND community = ?
-        """, (year, college_code, branch_code, community))
-        if c.fetchone() is None:
-            c.execute("""
-                INSERT INTO admissions (year, college_code, branch_code, community, opening_cutoff, closing_cutoff, opening_rank, closing_rank)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-            """, (year, college_code, branch_code, community, op_cut, cl_cut, op_rank, cl_rank))
-            inserted_admissions += 1
-    print(f"  Inserted {inserted_admissions} sample admission records.")
     
     # ----------------------------------------------------
     # Index Creation

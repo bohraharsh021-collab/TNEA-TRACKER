@@ -27,46 +27,6 @@ DUPLICATE_GROUPS = [
     ('TX', ['TT'])
 ]
 
-NEW_BRANCHES = [
-    ('AI', 'ARTIFICIAL INTELLIGENCE'),
-    ('QC', 'QUANTUM COMPUTING'),
-    ('DS', 'DATA SCIENCE'),
-    ('ML', 'MACHINE LEARNING'),
-    ('NT', 'NANO TECHNOLOGY'),
-    ('RE', 'RENEWABLE ENERGY ENGINEERING'),
-    ('CN', 'COMPUTER NETWORKS AND INFRASTRUCTURE'),
-    ('SE', 'SOFTWARE ENGINEERING'),
-    ('DE', 'DATABASE ENGINEERING'),
-    ('CC', 'CLOUD COMPUTING AND TECHNOLOGY'),
-    ('ST', 'SUSTAINABLE TECHNOLOGY AND DEVELOPMENT'),
-    ('RO', 'AUTOMATION AND ROBOTICS ENGINEERING')
-]
-
-NEW_ADMISSIONS_DATA = [
-    # (year, college_code, branch_code, community, opening_rank, closing_rank)
-    # CEG (1)
-    (2025, 1, 'AI', 'OC', None, 95),
-    (2025, 1, 'DS', 'OC', None, 140),
-    (2025, 1, 'ML', 'OC', None, 190),
-    (2025, 1, 'QC', 'OC', None, 280),
-    # MIT (4)
-    (2025, 4, 'AI', 'OC', None, 380),
-    (2025, 4, 'DS', 'OC', None, 420),
-    (2025, 4, 'ML', 'OC', None, 490),
-    # PSG Tech (2006)
-    (2025, 2006, 'AI', 'OC', None, 750),
-    (2025, 2006, 'DS', 'OC', None, 850),
-    (2025, 2006, 'RO', 'OC', None, 980),
-    # SSN (1315)
-    (2025, 1315, 'AI', 'OC', None, 1150),
-    (2025, 1315, 'DS', 'OC', None, 1250),
-    (2025, 1315, 'CC', 'OC', None, 1380),
-    # KCT (2712)
-    (2025, 2712, 'AI', 'OC', None, 2100),
-    (2025, 2712, 'DS', 'OC', None, 2350),
-    (2025, 2712, 'RO', 'OC', None, 2600),
-]
-
 def clean_database():
     if not os.path.exists(DB_PATH):
         print(f"Error: Database not found at {DB_PATH}")
@@ -137,39 +97,6 @@ def clean_database():
         
         placeholders = ','.join('?' for _ in all_dups)
         c.execute(f"DELETE FROM branches WHERE branch_code IN ({placeholders})", all_dups)
-        
-        # 4. Insert new branches to make sure we have 100+ branches
-        print("Inserting new modern branches...")
-        inserted_branches = 0
-        for code, name in NEW_BRANCHES:
-            try:
-                c.execute("INSERT INTO branches (branch_code, branch_name) VALUES (?, ?)", (code, name))
-                inserted_branches += 1
-            except sqlite3.IntegrityError:
-                print(f"  Branch {code} - {name} already exists.")
-                
-        print(f"  Inserted {inserted_branches} new branches.")
-        
-        # 5. Insert sample admission records for new branches
-        print("Inserting sample admission records for new branches...")
-        inserted_admissions = 0
-        for year, college_code, branch_code, community, opening_rank, closing_rank in NEW_ADMISSIONS_DATA:
-            try:
-                # Check if this admission record already exists to avoid duplicates
-                c.execute("""
-                    SELECT id FROM admissions 
-                    WHERE year = ? AND college_code = ? AND branch_code = ? AND community = ?
-                """, (year, college_code, branch_code, community))
-                if c.fetchone() is None:
-                    c.execute("""
-                        INSERT INTO admissions (year, college_code, branch_code, community, opening_rank, closing_rank)
-                        VALUES (?, ?, ?, ?, ?, ?)
-                    """, (year, college_code, branch_code, community, opening_rank, closing_rank))
-                    inserted_admissions += 1
-            except Exception as e:
-                print(f"  Error inserting sample admission: {e}")
-                
-        print(f"  Inserted {inserted_admissions} sample admission records.")
         
         # Commit transaction
         conn.commit()

@@ -32,14 +32,20 @@ document.addEventListener('DOMContentLoaded', () => {
   loadChoiceList();
   setupEventListeners();
   
-  // Fetch dropdown lists from backend
-  loadFiltersData();
-  
-  // Render course cards
-  loadBranchExplorer();
+  // Wait for SQLite database to be ready, then fetch dynamic stats for hero and populate filters
+  if (window.dbReadyPromise) {
+    window.dbReadyPromise.then(async () => {
+      await loadDynamicHeroStats();
+      loadFiltersData();
+      loadBranchExplorer();
+    });
+  } else {
+    loadFiltersData();
+    loadBranchExplorer();
+    runHeroAnimations();
+  }
   
   // Setup animations
-  runHeroAnimations();
   setupScrollEffects();
   
   // Initialize Lucide Icons
@@ -976,8 +982,28 @@ function shortenBranchName(name) {
 }
 
 function formatNumber(num) {
-  if (num === null || num === undefined) return 'N/A';
+  if (num === null || isNaN(num)) return 'N/A';
   return parseInt(num, 10).toLocaleString('en-IN');
+}
+
+async function loadDynamicHeroStats() {
+  try {
+    const res = await fetch(`${API_BASE}/dash-summary`);
+    if (!res.ok) throw new Error();
+    const data = await res.json();
+    
+    const colHero = document.getElementById('hero-stat-colleges');
+    const brHero = document.getElementById('hero-stat-branches');
+    const yrHero = document.getElementById('hero-stat-years');
+    
+    if (colHero) colHero.setAttribute('data-target', data.metrics.colleges);
+    if (brHero) brHero.setAttribute('data-target', data.metrics.branches);
+    if (yrHero) yrHero.setAttribute('data-target', data.metrics.years);
+  } catch (err) {
+    console.error('Failed to load dynamic hero stats:', err);
+  } finally {
+    runHeroAnimations();
+  }
 }
 
 function titleCase(str) {

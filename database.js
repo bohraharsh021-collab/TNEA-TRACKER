@@ -663,6 +663,11 @@
 
   // Initialize sql.js and load database
   async function initDatabase() {
+    // Check if running on file:// scheme
+    if (window.location.protocol === 'file:') {
+      showFileSchemeWarning();
+      return;
+    }
     showDatabaseLoader();
     try {
       // Load sql.js WebAssembly
@@ -681,9 +686,48 @@
     } catch (err) {
       console.error('Failed to initialize local SQLite database:', err);
       alert('Error loading database. Please make sure you are running a local server or hosting on GitHub Pages.');
-    }} finally {
+    } finally {
       hideDatabaseLoader();
     }
+  }
+
+  // Helper to show a warning when loaded directly via file://
+  function showFileSchemeWarning() {
+    let loader = document.getElementById('db-loading-overlay');
+    if (loader) loader.remove();
+    
+    const warning = document.createElement('div');
+    warning.id = 'db-loading-overlay';
+    warning.innerHTML = `
+      <div style="
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: rgba(15, 23, 42, 0.98);
+        color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 99999;
+        font-family: 'Inter', sans-serif;
+        padding: 2rem;
+        text-align: center;
+      ">
+        <div style="font-size: 4rem; margin-bottom: 1.5rem;">⚠️</div>
+        <h2 style="margin: 0 0 1rem 0; font-size: 1.75rem; font-weight: 700; color: #f43f5e;">Browser Security Restriction</h2>
+        <p style="margin: 0 0 1.5rem 0; color: #cbd5e1; font-size: 1.05rem; max-width: 550px; line-height: 1.6;">
+          You opened the file by double-clicking <strong>index.html</strong>. Modern browsers block database loading on <code>file://</code> URLs for security reasons (CORS).
+        </p>
+        <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 1.25rem; max-width: 550px; text-align: left; margin-bottom: 2rem;">
+          <h4 style="margin: 0 0 0.5rem 0; font-size: 1rem; color: #38bdf8;">How to see your website working:</h4>
+          <ol style="margin: 0; padding-left: 1.25rem; color: #94a3b8; font-size: 0.9rem; line-height: 1.6;">
+            <li><strong>Host it on GitHub Pages:</strong> Upload these files to GitHub. It will run perfectly online!</li>
+            <li><strong>Run your local server:</strong> Keep Python running and visit <a href="http://localhost:8000" target="_blank" style="color: #6366f1; text-decoration: underline; font-weight: 600;">http://localhost:8000</a> in your browser.</li>
+          </ol>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(warning);
   }
 
   // Execute SQL statement and return rows as list of objects
@@ -699,7 +743,9 @@
       return values.map(row => {
         const obj = {};
         columns.forEach((col, idx) => {
-          obj[col] = row[idx];
+          // Strip any table prefix (e.g. "a.college_code" becomes "college_code")
+          const cleanCol = col.includes('.') ? col.split('.').pop() : col;
+          obj[cleanCol] = row[idx];
         });
         return obj;
       });

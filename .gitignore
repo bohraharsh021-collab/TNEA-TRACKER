@@ -1,0 +1,13 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
+
+# Large Video Files
+*.mp4
+*.mov
+Recording*.mp4

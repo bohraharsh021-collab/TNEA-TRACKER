@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TNEA Tracker — Find Your Perfect Engineering College</title>
+  <meta name="description" content="Explore Tamil Nadu engineering colleges, compare closing ranks from 2021-2025, predict your chances, and build your TNEA counselling choice list.">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- CSS Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+  
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  
+  <!-- jsPDF CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <noscript>
+    <div style="background-color: #ef4444; color: white; padding: 1rem; text-align: center; font-weight: bold;">
+      JavaScript is required to run the TNEA Tracker. Please enable it in your browser.
+    </div>
+  </noscript>
+
+  <!-- Navigation Bar -->
+  <nav id="navbar" class="navbar">
+    <div class="nav-container">
+      <a href="#hero" class="navbar-logo">TNEA Tracker</a>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="#hero" class="active">Home</a></li>
+        <li><a href="#explorer">Colleges</a></li>
+        <li><a href="#courses">Courses</a></li>
+        <li><a href="#predictor">Predictor</a></li>
+        <li><a href="#choicelist">My Choices</a></li>
+        <li><a href="#trends">Trends</a></li>
+      </ul>
+      <button id="mobile-menu-btn" class="mobile-menu-btn" aria-label="Toggle navigation menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="hero" class="hero">
+    <div class="hero-glow"></div>
+    <div class="hero-glow-secondary"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">Find Your Perfect Engineering College</h1>
+      <p class="hero-subtitle">Explore 460+ engineering colleges across Tamil Nadu. Compare general ranks from 2021-2025. Build your TNEA counselling choice list with confidence.</p>
+      
+      <div class="hero-stats">
+        <div class="stat-item">
+          <div class="stat-value" data-target="467">0</div>
+          <div class="stat-label">Colleges</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" data-target="105">0</div>
+          <div class="stat-label">Branches</div>
+        </div>
+        <div class="stat-item">
+          <div class="stat-value" data-target="5">0</div>
+          <div class="stat-label">Years of Data</div>
+        </div>
+      </div>
+      
+      <!-- Quick Navigation Panel -->
+      <div class="quick-nav-panel">
+        <div class="quick-nav-card glass-card" onclick="document.getElementById('explorer').scrollIntoView({ behavior: 'smooth' })">
+          <div class="quick-nav-icon"><i data-lucide="compass"></i></div>
+          <h3>College Explorer</h3>
+          <p>Search engineering colleges by year, district, branch, and type.</p>
+          <span class="quick-nav-link">Go to Explorer &rarr;</span>
+        </div>
+        <div class="quick-nav-card glass-card" onclick="document.getElementById('predictor').scrollIntoView({ behavior: 'smooth' })">
+          <div class="quick-nav-icon"><i data-lucide="sparkles"></i></div>
+          <h3>Chances Predictor</h3>
+          <p>Estimate your chances: Safe, Moderate, or Reach categories.</p>
+          <span class="quick-nav-link">Check Chances &rarr;</span>
+        </div>
+        <div class="quick-nav-card glass-card" onclick="document.getElementById('courses').scrollIntoView({ behavior: 'smooth' })">
+          <div class="quick-nav-icon"><i data-lucide="book-open"></i></div>
+          <h3>Course Explorer</h3>
+          <p>Browse 100+ branches and see where they are offered.</p>
+          <span class="quick-nav-link">Explore Courses &rarr;</span>
+        </div>
+        <div class="quick-nav-card glass-card" onclick="document.getElementById('trends').scrollIntoView({ behavior: 'smooth' })">
+          <div class="quick-nav-icon"><i data-lucide="bar-chart-3"></i></div>
+          <h3>Analytics Trends</h3>
+          <p>Explore rising cutoffs, district counts, and rank metrics.</p>
+          <span class="quick-nav-link">View Analytics &rarr;</span>
+        </div>
+      </div>
+      
+      <div class="hero-actions" style="margin-top: 3rem;">
+        <a href="#explorer" id="explore-btn" class="btn-primary btn-large">Start Exploring &rarr;</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- College Explorer -->
+  <section id="explorer" class="section">
+    <div class="section-header">
+      <h2 class="section-title">College Explorer</h2>
+      <p class="section-subtitle">Filter engineering cutoffs and ranks based on TNEA General Counselling data.</p>
+    </div>
+
+    <div class="filter-panel glass-card">
+      <div class="filter-row">
+        <div class="filter-group">
+          <label class="filter-label" for="year-filter">Counselling Year</label>
+          <select id="year-filter" class="filter-select">
+            <option value="All">All Years</option>
+            <option value="2025" selected>2025</option>
+            <option value="2024">2024</option>
+            <option value="2023">2023</option>
+            <option value="2022">2022</option>
+            <option value="2021">2021</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label" for="district-filter">District</label>
+          <select id="district-filter" class="filter-select">
+            <option value="All">All Districts</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label" for="branch-filter">Branch Code</label>
+          <select id="branch-filter" class="filter-select">
+            <option value="All">All Branches</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label" for="tier-filter">Institution Type</label>
+          <select id="tier-filter" class="filter-select">
+            <option value="All">All Types</option>
+          </select>
+        </div>
+      </div>
+      <div class="filter-actions">
+        <button id="reset-filters-btn" class="btn-outline">
+          <i data-lucide="rotate-ccw"></i> Reset
+        </button>
+      </div>
+    </div>
+
+    <div class="results-header">
+      <span id="results-count" class="results-count">Please select filter parameters to display matching records.</span>
+      <div class="sort-controls" id="sort-controls-wrapper" style="display: none;">
+        <label for="sort-by" class="filter-label" style="display: inline-block; margin-right: 0.5rem; margin-bottom: 0;">Sort By</label>
+        <select id="sort-by" class="filter-select">
+          <option value="rank-asc" selected>Closing Rank (Low to High)</option>
+          <option value="rank-desc">Closing Rank (High to Low)</option>
+          <option value="name-asc">College Name (A-Z)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="results-container glass-card">
+      <table id="results-table" class="results-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Code</th>
+            <th>College Name</th>
+            <th>Branch</th>
+            <th>Opening (Cutoff / Rank)</th>
+            <th>Closing (Cutoff / Rank)</th>
+            <th>District</th>
+            <th>Institution Type</th>
+          </tr>
+        </thead>
+        <tbody id="results-body">
+          <tr>
+            <td colspan="8" style="text-align: center; color: var(--text-muted); padding: 4rem 2rem;">
+              <i data-lucide="info" style="width: 32px; height: 32px; margin-bottom: 0.75rem; opacity: 0.5;"></i>
+              <p>Please select your filter parameters above and click "Search Colleges" to display matching records.</p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <div id="pagination" class="pagination">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </section>
+
+  <!-- Course/Branch Explorer -->
+  <section id="courses" class="section">
+    <div class="section-header">
+      <h2 class="section-title">Course & Branch Explorer</h2>
+      <p class="section-subtitle">Browse engineering branches offered in Tamil Nadu, ordered by average closing ranks.</p>
+    </div>
+    
+    <div class="course-controls glass-card" style="display: flex; gap: 1rem; max-width: 800px; margin: 0 auto 2.5rem; padding: 1.5rem; justify-content: center; align-items: center; flex-wrap: wrap;">
+      <div class="filter-group" style="flex: 1; min-width: 150px;">
+        <label class="filter-label" for="course-year-filter">Counselling Year</label>
+        <select id="course-year-filter" class="filter-select">
+          <option value="All">All Years</option>
+          <option value="2025" selected>2025</option>
+          <option value="2024">2024</option>
+          <option value="2023">2023</option>
+          <option value="2022">2022</option>
+          <option value="2021">2021</option>
+        </select>
+      </div>
+      <div class="filter-group" style="flex: 2; min-width: 250px;">
+        <label class="filter-label" for="course-search">Search Branch</label>
+        <input type="text" id="course-search" placeholder="Search branches by name or code..." class="filter-input">
+      </div>
+    </div>
+    
+    <div id="course-grid" class="course-grid">
+      <!-- Populated by JS -->
+    </div>
+    
+    <div style="text-align: center; margin-top: 3rem;">
+      <button id="show-more-courses-btn" class="btn-outline">
+        <i data-lucide="chevrons-down"></i> Show More Branches
+      </button>
+    </div>
+  </section>
+
+  <!-- Cutoff Predictor -->
+  <section id="predictor" class="section">
+    <div class="section-header">
+      <h2 class="section-title">What Are My Chances?</h2>
+      <p class="section-subtitle">Enter your TNEA general rank to check which colleges you might get admitted to and add them to your choices.</p>
+    </div>
+
+    <div class="predictor-form glass-card" style="max-width: 800px;">
+      <div class="predictor-input-group" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 1.5rem;">
+        <div class="input-group">
+          <label class="filter-label" for="student-rank">Your TNEA General Rank</label>
+          <input type="number" id="student-rank" min="1" placeholder="e.g. 12000" class="filter-input" style="font-size: 1.15rem; padding: 12px 16px;">
+        </div>
+        <div class="input-group">
+          <label class="filter-label" for="student-cutoff">Your TNEA Cutoff Mark</label>
+          <input type="number" id="student-cutoff" min="0" max="200" step="0.01" placeholder="e.g. 192.5" class="filter-input" style="font-size: 1.15rem; padding: 12px 16px;">
+        </div>
+      </div>
+      
+      <div class="predictor-filters">
+        <div class="filter-group">
+          <label class="filter-label" for="pred-district">Preferred District</label>
+          <select id="pred-district" class="filter-select">
+            <option value="All">All Districts</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label" for="pred-branch">Preferred Branch</label>
+          <select id="pred-branch" class="filter-select">
+            <option value="All">All Branches</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label class="filter-label" for="pred-tier">Institution Type</label>
+          <select id="pred-tier" class="filter-select">
+            <option value="All">All Types</option>
+          </select>
+        </div>
+      </div>
+      
+      <div style="text-align: center; margin-top: 1.5rem;">
+        <button id="predict-btn" class="btn-primary btn-large">
+          <i data-lucide="sparkles"></i> Predict My Chances
+        </button>
+      </div>
+    </div>
+
+    <div class="predictor-legend">
+      <span class="badge-safe">🟢 Safe (General Rank is &le; 85% of Closing Rank)</span>
+      <span class="badge-moderate">🟡 Moderate (General Rank is within &plusmn;15% of Closing Rank)</span>
+      <span class="badge-reach">🔴 Reach (General Rank is within 15%-30% above Closing Rank)</span>
+    </div>
+
+    <div id="predictor-results" class="predictor-results">
+      <!-- Populated by JS -->
+    </div>
+  </section>
+
+  <!-- Choice List Builder -->
+  <section id="choicelist" class="section">
+    <div class="section-header">
+      <h2 class="section-title">My Choice List</h2>
+      <p class="section-subtitle">Create and arrange your preferred college choices. Drag and drop to change priority list order.</p>
+    </div>
+
+    <div class="choice-list-toolbar glass-card">
+      <span id="choice-count" class="results-count">0 choices added</span>
+      <div class="choice-actions">
+        <button id="export-pdf-btn" class="btn-primary">
+          <i data-lucide="file-text"></i> Export PDF
+        </button>
+        <button id="export-csv-btn" class="btn-outline">
+          <i data-lucide="file-spreadsheet"></i> Export CSV
+        </button>
+        <button id="clear-choices-btn" class="btn-danger">
+          <i data-lucide="trash-2"></i> Clear All
+        </button>
+      </div>
+    </div>
+
+    <div id="choice-list-container" class="choice-list-container">
+      <div class="choice-empty">
+        <i data-lucide="clipboard-list" style="width: 48px; height: 48px; margin-bottom: 1rem; opacity: 0.5;"></i>
+        <p>Your choice list is empty. Add colleges from the Predictor or Course Explorer to start building your priority list.</p>
+      </div>
+      <!-- Populated by JS -->
+    </div>
+  </section>
+
+  <!-- Trends Dashboard -->
+  <section id="trends" class="section">
+    <div class="section-header">
+      <h2 class="section-title">Trends &amp; Analytics</h2>
+      <p class="section-subtitle">Insights and Year-over-Year closing rank trends to make data-backed decisions.</p>
+    </div>
+
+    <!-- Overview Cards -->
+    <div class="metrics-overview-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2.5rem;">
+      <div class="metric-card glass-card" style="padding: 1.75rem 1.5rem; text-align: center;">
+        <span style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em;">Colleges Tracked</span>
+        <h3 id="stat-dash-colleges" style="font-size: 2.25rem; font-weight: 800; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-top: 0.5rem; font-family: var(--font-heading);">467</h3>
+      </div>
+      <div class="metric-card glass-card" style="padding: 1.75rem 1.5rem; text-align: center;">
+        <span style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em;">Engineering Branches</span>
+        <h3 id="stat-dash-branches" style="font-size: 2.25rem; font-weight: 800; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-top: 0.5rem; font-family: var(--font-heading);">105</h3>
+      </div>
+      <div class="metric-card glass-card" style="padding: 1.75rem 1.5rem; text-align: center;">
+        <span style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em;">Years of Data</span>
+        <h3 id="stat-dash-years" style="font-size: 2.25rem; font-weight: 800; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-top: 0.5rem; font-family: var(--font-heading);">5</h3>
+      </div>
+      <div class="metric-card glass-card" style="padding: 1.75rem 1.5rem; text-align: center;">
+        <span style="color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em;">OC Ranks Mapped</span>
+        <h3 id="stat-dash-records" style="font-size: 2.25rem; font-weight: 800; background: var(--accent-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-top: 0.5rem; font-family: var(--font-heading);">16,100+</h3>
+      </div>
+    </div>
+
+    <!-- Permanent Dashboard Charts Grid -->
+    <div class="dashboard-charts-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-bottom: 3rem;">
+      <div class="chart-card glass-card" style="padding: 1.5rem; min-height: 350px;">
+        <h4 style="margin-bottom: 1.25rem; font-size: 1.05rem; color: var(--text-primary); font-family: var(--font-heading);">Seat Distribution by Institution Type</h4>
+        <div class="chart-container" style="position: relative; height: 250px;">
+          <canvas id="dash-chart-inst-type"></canvas>
+        </div>
+      </div>
+      <div class="chart-card glass-card" style="padding: 1.5rem; min-height: 350px;">
+        <h4 style="margin-bottom: 1.25rem; font-size: 1.05rem; color: var(--text-primary); font-family: var(--font-heading);">Top 10 Districts by College Count</h4>
+        <div class="chart-container" style="position: relative; height: 250px;">
+          <canvas id="dash-chart-districts"></canvas>
+        </div>
+      </div>
+      <div class="chart-card glass-card" style="padding: 1.5rem; min-height: 350px;">
+        <h4 style="margin-bottom: 1.25rem; font-size: 1.05rem; color: var(--text-primary); font-family: var(--font-heading);">Top 10 Branches by College Count</h4>
+        <div class="chart-container" style="position: relative; height: 250px;">
+          <canvas id="dash-chart-branches"></canvas>
+        </div>
+      </div>
+      <div class="chart-card glass-card" style="padding: 1.5rem; min-height: 350px;">
+        <h4 style="margin-bottom: 1.25rem; font-size: 1.05rem; color: var(--text-primary); font-family: var(--font-heading);">Average Closing Rank of Top Districts</h4>
+        <div class="chart-container" style="position: relative; height: 250px;">
+          <canvas id="dash-chart-ranks"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <!-- Chart 1: Factual Analytics Explorer (Supports 100 modules) -->
+      <div class="chart-card glass-card" style="grid-column: 1 / -1; min-height: 520px;">
+        <h3>Interactive Analytics Explorer</h3>
+        <p class="section-subtitle" style="text-align: left; font-size: 0.9rem; margin-bottom: 1.5rem;">Select from 10 categories containing exactly 100 factual analytics modules.</p>
+        
+        <div class="chart-controls" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem; justify-content: flex-start; align-items: center;">
+          <div class="filter-group" style="min-width: 250px; flex: 1;">
+            <label class="filter-label" for="analytics-category-select">1. Select Category</label>
+            <select id="analytics-category-select" class="filter-select" style="width: 100%;">
+              <option value="col_comp" selected>College Comparisons</option>
+              <option value="br_pop">Branch Popularity</option>
+              <option value="seat_dist">Seat Distribution</option>
+              <option value="rank_ana">Rank Analysis</option>
+              <option value="hist_tr">Historical Trends</option>
+              <option value="reg_ana">Region-wise Analysis</option>
+              <option value="inst_ana">Institution-type Analysis</option>
+              <option value="br_dem">Branch Demand</option>
+              <option value="adm_stat">Admission Statistics</option>
+              <option value="stu_ins">Student Insights &amp; Analytics</option>
+            </select>
+          </div>
+          
+          <div class="filter-group" style="min-width: 320px; flex: 2;">
+            <label class="filter-label" for="analytics-module-select">2. Select Module (100 Analytics Inventory)</label>
+            <select id="analytics-module-select" class="filter-select" style="width: 100%;">
+              <!-- Dynamic options loaded by JS -->
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1rem; border-left: 3px solid var(--accent-secondary); padding-left: 1rem;">
+          <h4 id="analytics-module-title" style="margin-bottom: 0.25rem; color: var(--text-primary);">Module Title</h4>
+          <p id="analytics-module-description" style="font-size: 0.85rem; color: var(--text-secondary);">Module Description</p>
+        </div>
+
+        <div class="chart-container" style="position: relative; height: 350px;">
+          <canvas id="analytics-explorer-chart"></canvas>
+        </div>
+      </div>
+
+      <!-- Chart 2: YoY Rank Trends -->
+      <div class="chart-card glass-card" style="grid-column: 1 / -1;">
+        <h3>YoY General Rank Trend for Individual Colleges</h3>
+        <p class="section-subtitle" style="text-align: left; font-size: 0.9rem; margin-bottom: 1.5rem;">Trace the historical closing rank shifts (2021-2025) for specific colleges and branch choices.</p>
+        
+        <div class="chart-controls">
+          <select id="trend-college-select" class="filter-select" style="max-width: 350px; width: 100%;"></select>
+          <select id="trend-branch-select" class="filter-select" style="max-width: 250px; width: 100%;"></select>
+        </div>
+        <div class="chart-container" style="position: relative; height: 350px;">
+          <canvas id="trend-chart"></canvas>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <p>Built with &hearts; for TNEA Aspirants</p>
+      <p>Data Source: TNEA Counselling Reports (2021&ndash;2025) | General Academic OC Ranks</p>
+      <p>&copy; 2026 TNEA Tracker. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">
+    <span id="toast-message" class="toast-message">Item added to choice list</span>
+  </div>
+
+  <!-- Detail Modal -->
+  <div id="modal" class="modal-overlay">
+    <div class="modal-content glass-card">
+      <button class="modal-close" id="modal-close" aria-label="Close modal">&times;</button>
+      <div class="modal-header">
+        <h2 id="modal-title">College details</h2>
+        <p id="modal-subtitle" class="modal-subtitle">Branch rank details</p>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Back to Top Button -->
+  <button id="back-to-top" class="back-to-top" aria-label="Back to top">
+    <i data-lucide="arrow-up"></i>
+  </button>
+  
+  <!-- SQLite Wasm and Client Database Router -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/sql.js/1.6.2/sql-wasm.js"></script>
+  <script src="database.js"></script>
+  
+  <!-- Chart logic -->
+  <script src="charts.js"></script>
+
+  <!-- Application Logic -->
+  <script src="app.js"></script>
+</body>
+</html>
